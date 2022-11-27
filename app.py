@@ -2,6 +2,7 @@ from flask import Flask, Response, jsonify, request, render_template
 from flask_sqlalchemy import SQLAlchemy
 
 from errors import errors
+from cmap import CMAP
 
 app = Flask(__name__)
 app.register_blueprint(errors)
@@ -13,27 +14,31 @@ app.app_context().push()
 
 
 class Paper(db.Model):
-    title = db.Column(db.String(128), index=True)
+    title = db.Column(db.String(256), index=True)
+    tldr = db.Column(db.String(512), index=True)
     year = db.Column(db.Integer, index=True)
     score = db.Column(db.Float, index=True)
     scores = db.Column(db.String(64), index=True)
-    decision = db.Column(db.String(20), index=True)
-    # keywords = db.Column(db.String, index=True)
+    keywords = db.Column(db.String(256), index=True)
     # authors = db.Column(db.String(128), index=True)
     venue = db.Column(db.String(64), index=True)
     id = db.Column(db.String(20))
     url = db.Column(db.String(64), primary_key=True)
+    decision = db.Column(db.String(32), index=True)
 
     def to_dict(self):
+        bgcolor = CMAP.get(self.decision, "#FFFFFF")
         return {
             'title': f'<a href="{self.url}">{self.title}</a>',
+            'tldr': self.tldr,
             'year': self.year,
+            'keywords': self.keywords,
             'score': self.score,
             'scores': self.scores,
-            'decision': self.decision,
             'venue': self.venue,
-            'id': self.id,
-            'url': f'<a href="{self.url}">Source</a>'
+            # 'id': self.id,
+            # 'url': f'<a target="_blank" href="{self.url}">Source</a>',  # target _blank to open new tab
+            'decision': f'<span style="background-color:{bgcolor};">{self.decision}</span>',
         }
 
 db.create_all()
