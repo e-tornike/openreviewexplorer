@@ -47,7 +47,7 @@ db.create_all()
 @app.route("/")
 def index():
     # return Response("Hello, world!", status=200)
-    return render_template('ajax_papers_table.html', title='OpenReview Explorer')
+    return render_template('ajax_papers_table.html', title='OpenReview Explorer Plus')
 
 
 @app.route('/api/data')
