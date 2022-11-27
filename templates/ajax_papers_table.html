@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <table id="data" class="table table-striped">
+    <thead>
+      <tr>
+        <th>Title</th>
+        <th>Avg. Score</th>
+        <th>Scores</th>
+        <th>Decision</th>
+        <th>Venue</th>
+        <th>Year</th>
+        <!-- <th>ID</th>
+        <th>URL</th> -->
+      </tr>
+    </thead>
+    <tbody>
+    </tbody>
+  </table>
+{% endblock %}
+
+{% block scripts %}
+  <script>
+    $(document).ready(function () {
+      $('#data').DataTable({
+        ajax: '/api/data',
+        columns: [
+          {data: 'title', orderable: true, searchable: true},
+          {data: 'score', orderable: true, searchable: true},
+          {data: 'scores', orderable: false, searchable: true},
+          {data: 'decision', orderable: true, searchable: true},
+          {data: 'venue', orderable: true, searchable: true},
+          {data: 'year', searchable: true},
+          // {data: 'id', orderable: false, searchable: false},
+          // {data: 'url', orderable: false, searchable: false},
+        ],
+      });
+    });
+  </script>
+{% endblock %}
