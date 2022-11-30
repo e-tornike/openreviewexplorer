@@ -99,6 +99,14 @@
         }
       });
 
+ 
+      table.on( 'draw', function () {
+          var body = $( table.table().body() );
+  
+          body.unhighlight();
+          body.highlight( table.search() );  
+      } );
+
     });
   </script>
 {% endblock %}
