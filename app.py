@@ -1,8 +1,9 @@
-from flask import Flask, Response, jsonify, request, render_template
+from flask import Flask, Response, render_template
 from flask_sqlalchemy import SQLAlchemy
 
 from errors import errors
 from cmap import CMAP
+
 
 app = Flask(__name__)
 app.register_blueprint(errors)
@@ -20,7 +21,7 @@ class Paper(db.Model):
     score = db.Column(db.Float, index=True)
     scores = db.Column(db.String(64), index=True)
     keywords = db.Column(db.String(256), index=True)
-    # authors = db.Column(db.String(128), index=True)
+    authors = db.Column(db.String(256), index=True)
     venue = db.Column(db.String(64), index=True)
     id = db.Column(db.String(20))
     url = db.Column(db.String(64), primary_key=True)
@@ -36,38 +37,24 @@ class Paper(db.Model):
             'score': self.score,
             'scores': self.scores,
             'venue': self.venue,
-            # 'id': self.id,
-            # 'url': f'<a target="_blank" href="{self.url}">Source</a>',  # target _blank to open new tab
+            'authors': self.authors,
             'decision': f'<span style="background-color:{bgcolor};">{self.decision}</span>',
-        }
+        } 
 
 db.create_all()
 
 
 @app.route("/")
 def index():
-    # return Response("Hello, world!", status=200)
     return render_template('ajax_papers_table.html', title='OpenReview Explorer Plus')
 
 
 @app.route('/api/data')
 def data():
-    return {'data': [paper.to_dict() for paper in Paper.query]}
-
-
-@app.route("/custom", methods=["POST"])
-def custom():
-    payload = request.get_json()
-
-    if payload.get("say_hello") is True:
-        output = jsonify({"message": "Hello!"})
-    else:
-        output = jsonify({"message": "..."})
-
-    return output
+    papers = [paper.to_dict() for paper in Paper.query]
+    return {'data': papers}
 
 
 @app.route("/health")
 def health():
     return Response("OK", status=200)
-	

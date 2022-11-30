@@ -1,44 +1,104 @@
 {% extends "base.html" %}
 
 {% block content %}
-  <table id="data" class="table table-striped">
+  <table id="data" class="table table-hover" cellspacing="0" width="100%">
     <thead>
       <tr>
+        <th></th>
         <th>Title</th>
-        <th>TL;DR</th>
-        <th>Keywods</th>
         <th>Avg. Score</th>
         <th>Scores</th>
         <th>Venue</th>
         <th>Year</th>
         <th>Decision</th>
-        <!-- <th>ID</th>
-        <th>URL</th> -->
       </tr>
     </thead>
     <tbody>
     </tbody>
+    <tfoot>
+      <tr>
+        <th></th>
+        <th>Title</th>
+        <th>Avg. Score</th>
+        <th>Scores</th>
+        <th>Venue</th>
+        <th>Year</th>
+        <th>Decision</th>
+      </tr>
+    </tfoot>
   </table>
 {% endblock %}
 
 {% block scripts %}
   <script>
+    function format(d) {
+      return (
+        '<table cellpadding="5" cellspacing="0" border="0" style="padding-left:50px;">' +
+        '<tr>' +
+        '<td>TL;DR:</td>' +
+        '<td>' +
+        d.tldr +
+        '</td>' +
+        '</tr>' +
+        '<tr>' +
+        '<td>Authors:</td>' +
+        '<td>' +
+        d.authors +
+        '</td>' +
+        '</tr>' +
+        '<tr>' +
+        '<td>Keywords:</td>' +
+        '<td>' +
+        d.keywords +
+        '</td>' +
+        '</tr>' +
+        '</table>'
+      );
+    }
     $(document).ready(function () {
-      $('#data').DataTable({
+      var table = $('#data').DataTable({
         ajax: '/api/data',
+        responsize: true,
+        bAutoWidth: false,
+        paging: true,
+        deferRender: true,
         columns: [
+          { 
+            className: 'dt-control',
+            orderable: false,
+            data: null,
+            defaultContent: '',
+          },
           {data: 'title', orderable: true, searchable: true},
-          {data: 'tldr', orderable: true, searchable: true},
-          {data: 'keywords', orderable: true, searchable: true},
           {data: 'score', orderable: true, searchable: true},
           {data: 'scores', orderable: false, searchable: true},
           {data: 'venue', orderable: true, searchable: true},
           {data: 'year', searchable: true},
           {data: 'decision', orderable: true, searchable: true},
-          // {data: 'id', orderable: false, searchable: false},
-          // {data: 'url', orderable: false, searchable: false},
+          // invisible columns
+          {data: 'keywords', orderable: false, searchable: true, visible: false},
+          {data: 'tldr', orderable: false, searchable: true, visible: false},
+
         ],
+        order: [[5, 'desc']],
       });
+
+      // Add event listener for opening and closing details
+      $('#data tbody').on('click', 'td.dt-control', function () {
+        var tr = $(this).closest('tr');
+        var row = table.row(tr);
+
+        if (row.child.isShown()) {
+          // This row is already open - close it
+          row.child.hide();
+          tr.removeClass('shown');
+        } else {
+          // Open this row
+          row.child(format(row.data())).show();
+          tr.addClass('shown');
+        }
+      });
+
     });
   </script>
 {% endblock %}
