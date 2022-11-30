@@ -41,7 +41,7 @@ class Paper(db.Model):
             'decision': f'<span style="background-color:{bgcolor};">{self.decision}</span>',
         } 
 
-db.create_all()
+# db.create_all()
 
 
 @app.route("/")
